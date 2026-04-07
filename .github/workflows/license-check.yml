@@ -1,0 +1,83 @@
+name: License Header Check
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  check-license-headers:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install git+https://github.com/apache/skywalking-eyes.git
+        
+    - name: Check license headers
+      run: |
+        # Create a configuration file for license-eye
+        cat > .licenserc.yaml << 'EOF'
+        header:
+          license:
+            spdx-id: MPL-2.0
+            pattern: "// SPDX-License-Identifier: MPL-2.0"
+          
+        paths-ignore:
+          - "**/*.md"
+          - "**/*.txt"
+          - "**/*.yml"
+          - "**/*.yaml"
+          - "**/.github/**"
+          - "**/.git/**"
+          - "**/.vscode/**"
+          - "**/LICENSE*"
+          - "**/Makefile"
+          - "**/CMakeLists.txt"
+          - "**/*.bat"
+          - "**/*.sh"
+          
+        comment: on-failure
+        EOF
+        
+        # Run license check
+        license-eye header check
+        
+    - name: Alternative simple check (if license-eye fails)
+      if: failure()
+      run: |
+        echo "Running alternative license header check..."
+        
+        # Define the expected license header pattern
+        LICENSE_PATTERN="SPDX-License-Identifier: MPL-2.0"
+        
+        # Check source files for license headers
+        FILES_WITHOUT_LICENSE=""
+        
+        # Check C++ files
+        for file in $(find . -name "*.cpp" -o -name "*.h" -o -name "*.hpp" -o -name "*.cu"); do
+          if ! head -n 5 "$file" | grep -q "$LICENSE_PATTERN"; then
+            FILES_WITHOUT_LICENSE="$FILES_WITHOUT_LICENSE $file"
+          fi
+        done
+        
+        if [ -n "$FILES_WITHOUT_LICENSE" ]; then
+          echo "ERROR: The following files are missing the MPL license header:"
+          echo "$FILES_WITHOUT_LICENSE"
+          echo ""
+          echo "Please add the following header to each file:"
+          echo "// SPDX-License-Identifier: MPL-2.0"
+          exit 1
+        else
+          echo "✓ All source files have the proper MPL license header"
+        fi
