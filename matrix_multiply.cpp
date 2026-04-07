@@ -205,7 +205,7 @@ int main() {
         std::cout << "All tests completed successfully!" << std::endl;
         return 0;
     } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+        std::cerr << "Error1: " << e.what() << std::endl;
         return 1;
     }
 }

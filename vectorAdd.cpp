@@ -1,13 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
 
-/**
- * Vector addition: C = A + B.
- *
- * This sample is a very basic sample that implements element by element
- * vector addition. It is the same as the sample illustrating Chapter 2
- * of the programming guide with some additions like error checking.
- */
-
 #include <stdio.h>
 #include <cmath>
 

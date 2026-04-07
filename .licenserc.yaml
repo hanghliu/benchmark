@@ -1,0 +1,25 @@
+header:
+  license:
+      content: |
+        SPDX-License-Identifier: MPL-2.0
+  
+  # Only check .cpp and .cu files
+  paths:
+    - "**/*.cpp"
+    - "**/*.cu"
+  
+  # Exclude .github and .vscode directories
+  paths-ignore:
+    - "**/.github/**"
+    - "**/.vscode/**"
+    - "**/*.md"
+    - "**/*.txt"
+    - "**/*.yml"
+    - "**/*.yaml"
+    - "**/LICENSE*"
+    - "**/Makefile"
+    - "**/CMakeLists.txt"
+    - "**/*.bat"
+    - "**/*.sh"
+
+comment: on-failure
